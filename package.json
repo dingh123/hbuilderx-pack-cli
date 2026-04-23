@@ -42,7 +42,8 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run typecheck && npm run build"
+    "prepublishOnly": "npm run typecheck && npm run build",
+    "release": "npm run build"
   },
   "dependencies": {
     "commander": "^13.0.0"
