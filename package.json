@@ -1,6 +1,6 @@
 {
   "name": "hbuilderx-pack-cli",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "标准化的 HBuilderX CLI 打包工具，支持 App 打包、小程序发布、H5 部署",
   "keywords": [
     "hbuilderx",
