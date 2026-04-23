@@ -1,0 +1,66 @@
+{
+  "name": "hbuilderx-pack-cli",
+  "version": "0.1.0",
+  "description": "标准化的 HBuilderX CLI 打包工具，支持 App 打包、小程序发布、H5 部署",
+  "keywords": [
+    "hbuilderx",
+    "uniapp",
+    "uni-app",
+    "cli",
+    "pack",
+    "android",
+    "ios",
+    "miniprogram",
+    "mp-weixin",
+    "h5",
+    "ci",
+    "deploy"
+  ],
+  "license": "MIT",
+  "author": "dinghui",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "hbx-pack": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "schema",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "dependencies": {
+    "commander": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dingh123/hbuilderx-pack-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dingh123/hbuilderx-pack-cli/issues"
+  },
+  "homepage": "https://github.com/dingh123/hbuilderx-pack-cli#readme"
+}

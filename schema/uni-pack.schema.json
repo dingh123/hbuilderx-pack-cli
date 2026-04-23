@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://unpkg.com/uni-pack-cli/schema/uni-pack.schema.json",
+  "title": "uni-pack 配置文件",
+  "description": "HBuilderX CLI 打包工具配置文件",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "hbuilderx": {
+      "type": "object",
+      "description": "HBuilderX 相关配置",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "HBuilderX CLI 可执行文件路径，留空自动检测。也可通过 HBUILDERX_CLI 环境变量设置"
+        }
+      }
+    },
+    "project": {
+      "type": "string",
+      "description": "uni-app 项目路径（相对于配置文件或绝对路径），默认为配置文件所在目录",
+      "default": "./"
+    },
+    "pack": {
+      "type": "object",
+      "description": "App 打包配置（Android / iOS 云打包）",
+      "properties": {
+        "platform": {
+          "type": "string",
+          "enum": ["android", "ios", "android,ios", "ios,android"],
+          "description": "默认打包平台，可被 CLI 参数覆盖"
+        },
+        "iscustom": {
+          "type": "boolean",
+          "description": "是否打自定义基座，默认 false",
+          "default": false
+        },
+        "safemode": {
+          "type": "boolean",
+          "description": "是否开启安全模式，默认 true",
+          "default": true
+        },
+        "isconfusion": {
+          "type": "boolean",
+          "description": "是否开启 JS/NVUE 混淆",
+          "default": false
+        },
+        "splashads": { "type": "boolean", "description": "开屏广告" },
+        "rpads":     { "type": "boolean", "description": "浮窗广告" },
+        "pushads":   { "type": "boolean", "description": "推送广告" },
+        "exchange":  { "type": "boolean", "description": "换量联盟" },
+        "android": {
+          "type": "object",
+          "description": "Android 打包配置",
+          "properties": {
+            "packagename":     { "type": "string",  "description": "包名，如 com.example.app" },
+            "androidpacktype": { "type": "string",  "enum": ["0","1","2"], "description": "打包类型：0=自有证书 1=公共证书 2=老版本" },
+            "certalias":       { "type": "string",  "description": "证书别名" },
+            "certfile":        { "type": "string",  "description": ".keystore 证书文件路径，支持相对路径" },
+            "certpassword":    { "type": "string",  "description": "证书密码，支持 ${ENV_VAR} 语法" },
+            "storePassword":   { "type": "string",  "description": "keystore 密码（HBuilderX 4.41+），支持 ${ENV_VAR} 语法" },
+            "channels": {
+              "oneOf": [
+                { "type": "string", "description": "逗号分隔的渠道列表" },
+                { "type": "array", "items": { "type": "string" }, "description": "渠道数组" }
+              ],
+              "description": "渠道包：google, yyb, 360, huawei, xiaomi, oppo, vivo 等"
+            }
+          }
+        },
+        "ios": {
+          "type": "object",
+          "description": "iOS 打包配置",
+          "properties": {
+            "bundle":          { "type": "string", "description": "Bundle Identifier，如 com.example.app" },
+            "supporteddevice": { "type": "string", "enum": ["iPhone","iPad","iPhone,iPad"] },
+            "development": {
+              "type": "object",
+              "description": "开发证书（iscustom=true 时自动使用）",
+              "properties": {
+                "profile":     { "type": "string", "description": ".mobileprovision 文件路径" },
+                "certfile":    { "type": "string", "description": ".p12 证书文件路径" },
+                "certpassword":{ "type": "string", "description": "证书密码，支持 ${ENV_VAR}" }
+              }
+            },
+            "distribution": {
+              "type": "object",
+              "description": "发布证书（iscustom=false 时自动使用）",
+              "properties": {
+                "profile":     { "type": "string", "description": ".mobileprovision 文件路径" },
+                "certfile":    { "type": "string", "description": ".p12 证书文件路径" },
+                "certpassword":{ "type": "string", "description": "证书密码，支持 ${ENV_VAR}" }
+              }
+            },
+            "profile":     { "type": "string", "description": ".mobileprovision 路径（不使用 development/distribution 时）" },
+            "certfile":    { "type": "string", "description": ".p12 路径" },
+            "certpassword":{ "type": "string", "description": "证书密码，支持 ${ENV_VAR}" }
+          }
+        }
+      }
+    },
+    "publish": {
+      "type": "object",
+      "description": "发布配置",
+      "properties": {
+        "h5": {
+          "type": "object",
+          "description": "H5/Web 发布配置",
+          "properties": {
+            "provider":    { "type": "string", "enum": ["aliyun","alipay","tcb"], "description": "云服务商" },
+            "spaceId":     { "type": "string", "description": "云空间 ID" },
+            "webDomain":   { "type": "string", "description": "网站域名" },
+            "webTitle":    { "type": "string", "description": "网站标题" },
+            "webHosting":  { "type": "boolean","description": "上传到 uniCloud 前端网页托管" },
+            "ssr":         { "type": "boolean","description": "SSR 模式" },
+            "ssrHost":     { "type": "string", "description": "SSR 域名" },
+            "ssrProvider": { "type": "string", "description": "SSR 云服务商" }
+          }
+        },
+        "mp-weixin": {
+          "type": "object",
+          "description": "微信小程序发布配置",
+          "properties": {
+            "appid":       { "type": "string",  "description": "小程序 AppID" },
+            "privatekey":  { "type": "string",  "description": "上传密钥文件路径（.key）" },
+            "version":     { "type": "string",  "description": "版本号，支持 ${ENV_VAR}" },
+            "description": { "type": "string",  "description": "上传备注" },
+            "upload":      { "type": "boolean", "description": "是否自动上传" },
+            "robot":       { "type": "number",  "description": "CI 机器人编号 (1-30)" },
+            "sourceMap":   { "type": "boolean", "description": "生成 SourceMap" },
+            "subPackage":  { "type": "string",  "description": "分包名称" }
+          }
+        },
+        "mp-alipay": {
+          "type": "object",
+          "description": "支付宝小程序发布配置",
+          "properties": {
+            "appid":       { "type": "string",  "description": "小程序 AppID" },
+            "privatekey":  { "type": "string",  "description": "上传密钥文件路径" },
+            "version":     { "type": "string",  "description": "版本号，支持 ${ENV_VAR}" },
+            "description": { "type": "string",  "description": "上传备注" },
+            "upload":      { "type": "boolean", "description": "是否自动上传" }
+          }
+        }
+      }
+    },
+    "hooks": {
+      "type": "object",
+      "description": "构建钩子，在打包/发布前后执行自定义命令",
+      "properties": {
+        "before:pack":    { "oneOf": [{"type":"string"},{"type":"array","items":{"type":"string"}}] },
+        "after:pack":     { "oneOf": [{"type":"string"},{"type":"array","items":{"type":"string"}}] },
+        "before:publish": { "oneOf": [{"type":"string"},{"type":"array","items":{"type":"string"}}] },
+        "after:publish":  { "oneOf": [{"type":"string"},{"type":"array","items":{"type":"string"}}] }
+      }
+    }
+  }
+}

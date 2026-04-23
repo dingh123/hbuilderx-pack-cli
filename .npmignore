@@ -1,0 +1,9 @@
+src/
+schema/
+node_modules/
+*.log
+.DS_Store
+tsconfig.json
+tsup.config.ts
+.gitignore
+.claude/
