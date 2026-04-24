@@ -2,6 +2,10 @@
 
 标准化的 HBuilderX CLI 打包工具，支持 App 打包（Android / iOS）、小程序发布、H5 部署，适用于任何 uni-app 项目，开箱即用，CI/CD 友好。
 
+[![npm version](https://img.shields.io/npm/v/hbuilderx-pack-cli)](https://www.npmjs.com/package/hbuilderx-pack-cli)
+[![license](https://img.shields.io/npm/l/hbuilderx-pack-cli)](./LICENSE)
+[![node](https://img.shields.io/node/v/hbuilderx-pack-cli)](https://nodejs.org)
+
 > 本工具是对 HBuilderX 官方 CLI 的封装。官方文档（参数语义、平台枚举等原始定义）：
 > [https://hx.dcloud.net.cn/cli/README](https://hx.dcloud.net.cn/cli/README)
 
