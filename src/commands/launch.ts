@@ -1,8 +1,9 @@
 import { Command } from 'commander'
 import { log } from '../core/logger.js'
-import { launchApp } from '../core/hbuilderx.js'
+import { launchApp, listDevices } from '../core/hbuilderx.js'
 import { loadConfig, resolveProject } from '../core/config.js'
 import { validateEnvironment } from '../core/validator.js'
+import { parseDevices, toHbPlatform, promptSelectDevice } from '../core/devices.js'
 
 const SUPPORTED_PLATFORMS = ['app-android', 'app-ios', 'app-harmony'] as const
 type LaunchPlatform = typeof SUPPORTED_PLATFORMS[number]
@@ -21,7 +22,7 @@ export function createLaunchCommand(): Command {
     .option('--page-query <query>', '启动页面参数')
     .option('--config <path>', '指定配置文件路径')
     .option('--cwd <path>', '工作目录（默认：当前目录）')
-    .action((opts: Record<string, string | boolean | undefined>) => {
+    .action(async (opts: Record<string, string | boolean | undefined>) => {
       const cwd = (opts.cwd as string) ?? process.cwd()
       const platform = (opts.platform as string).toLowerCase() as LaunchPlatform
 
@@ -42,13 +43,32 @@ export function createLaunchCommand(): Command {
       const { cliPath } = validateEnvironment(config)
       const project = resolveProject(config, configDir)
 
+      let deviceId = opts.deviceId as string | undefined
+      if (!deviceId) {
+        try {
+          const hbPlatform = toHbPlatform(platform, opts.iosTarget as string | undefined)
+          const raw = listDevices(cliPath, hbPlatform)
+          const matched = parseDevices(raw)
+          if (matched.length > 1) {
+            const picked = await promptSelectDevice(matched)
+            deviceId = picked.id
+            log.info(`已选择设备: ${picked.name} (${picked.id})`)
+          } else if (matched.length === 1) {
+            deviceId = matched[0].id
+            log.dim(`自动选择设备: ${matched[0].name} (${matched[0].id})`)
+          }
+        } catch {
+          // 设备列表获取失败不阻塞，交给 HBuilderX 自行处理
+        }
+      }
+
       const args: string[] = []
       const add = (flag: string, val: string | boolean | undefined) => {
         if (val == null) return
         args.push(flag, String(val))
       }
 
-      add('--deviceId',        opts.deviceId)
+      add('--deviceId',        deviceId)
       add('--iosTarget',       opts.iosTarget)
       add('--playground',      opts.playground)
       add('--native-log',      opts.nativeLog)
@@ -60,7 +80,7 @@ export function createLaunchCommand(): Command {
       log.meta({
         '项目路径': project,
         '平台':     platform,
-        '设备':     (opts.deviceId as string) ?? '默认',
+        '设备':     deviceId ?? '默认',
       })
       log.divider('开始运行')
 

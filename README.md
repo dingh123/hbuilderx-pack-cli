@@ -2,6 +2,9 @@
 
 标准化的 HBuilderX CLI 打包工具，支持 App 打包（Android / iOS）、小程序发布、H5 部署，适用于任何 uni-app 项目，开箱即用，CI/CD 友好。
 
+> 本工具是对 HBuilderX 官方 CLI 的封装。官方文档（参数语义、平台枚举等原始定义）：
+> [https://hx.dcloud.net.cn/cli/README](https://hx.dcloud.net.cn/cli/README)
+
 ## 安装
 
 ```bash
@@ -228,6 +231,99 @@ hbx-pack publish -p h5
 hbx-pack publish -p mp-weixin --version 1.2.0 --description "修复若干问题"
 ```
 
+## launch 命令
+
+在连接的设备或模拟器上直接运行 uni-app 项目，相当于 HBuilderX 的"运行到手机或模拟器"。
+
+```
+hbx-pack launch [options]
+
+Options:
+  -p, --platform <platform>  目标平台: app-android | app-ios | app-harmony（必填）
+  --device-id <id>           设备序列号；不传时自动检测
+  --ios-target <target>      iOS 目标: device | simulator
+  --playground <type>        基座类型: standard | custom
+  --native-log               显示原生日志
+  --clean-cache              清除缓存
+  --compile-only             仅编译不运行
+  --page-path <path>         启动页面路径
+  --page-query <query>       启动页面参数
+  --config <path>            指定配置文件
+  --cwd <path>               工作目录（默认当前目录）
+```
+
+### 自动设备检测
+
+未传 `--device-id` 时会根据 `--platform`（以及 `--ios-target`）自动调 `cli devices list` 拉取对应平台的设备：
+
+- **0 台**：跳过，交给 HBuilderX 处理
+- **1 台**：自动选中该设备
+- **多台**：进入交互菜单选择
+
+```bash
+$ hbx-pack launch -p app-android --playground custom
+
+请选择设备：
+❯ 1) HONOR BVL-AN00  (AP7GVB3C30007421)
+  2) Medium_Phone_API_35  (emulator-5554)
+  ↑/↓ 选择 · Enter 确认 · 数字快选 · Ctrl+C 取消
+```
+
+交互操作：
+
+- `↑ / ↓` 上下移动选择
+- `Enter` 确认当前项
+- 数字键 `1`-`9` 直接跳选并确认
+- `Ctrl+C` 取消（退出码 130）
+
+非 TTY 环境（CI、pipe）自动降级为"输入编号"模式。
+
+### 平台映射
+
+`--platform` 和 `--ios-target` 组合决定查询哪类设备：
+
+| 命令组合 | 查询的 HBuilderX 平台 |
+|---|---|
+| `-p app-android` | `android`（真机 + 安卓模拟器） |
+| `-p app-ios`（或 `--ios-target device`） | `ios-iPhone` |
+| `-p app-ios --ios-target simulator` | `ios-simulator` |
+| `-p app-harmony` | `app-harmony` |
+
+### 在业务项目里用作 npm script
+
+```json
+{
+  "scripts": {
+    "dev:android": "hbx-pack launch -p app-android --playground custom",
+    "dev:ios":     "hbx-pack launch -p app-ios --ios-target device --playground custom",
+    "dev:ios-sim": "hbx-pack launch -p app-ios --ios-target simulator"
+  }
+}
+```
+
+## devices 命令
+
+列出已连接的设备，默认查安卓。
+
+```
+hbx-pack devices [options]
+
+Options:
+  -p, --platform <platform>  目标平台: android | ios-iPhone | ios-simulator | mp-harmony | app-harmony（默认 android）
+  --config <path>            指定配置文件
+  --cwd <path>               工作目录
+```
+
+```bash
+hbx-pack devices                      # 安卓设备 + 模拟器
+hbx-pack devices -p ios-iPhone        # iOS 真机
+hbx-pack devices -p ios-simulator     # iOS 模拟器
+hbx-pack devices -p app-harmony       # 鸿蒙 App
+hbx-pack devices -p mp-harmony        # 鸿蒙元服务
+```
+
+输出格式：`时间戳 设备名【设备ID】`，其中"设备ID"就是 `launch --device-id` 需要的值。
+
 ## user 命令
 
 ```bash
@@ -290,6 +386,10 @@ hbx-pack pack --config uni-pack.staging.json
 
 - Node.js >= 18
 - HBuilderX（已安装并登录 DCloud 账号）
+
+## 参考
+
+- HBuilderX CLI 官方文档：[https://hx.dcloud.net.cn/cli/README](https://hx.dcloud.net.cn/cli/README) —— 本工具所有透传参数（`--platform`、`--deviceId`、`--playground` 等）的语义以此为准
 
 ## License
 

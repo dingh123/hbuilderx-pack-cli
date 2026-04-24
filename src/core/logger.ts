@@ -1,5 +1,5 @@
 const ESC = '\x1b'
-const c = {
+export const c = {
   reset:  `${ESC}[0m`,
   bold:   `${ESC}[1m`,
   green:  `${ESC}[32m`,
@@ -10,7 +10,7 @@ const c = {
   gray:   `${ESC}[90m`,
 } as const
 
-const paint = (color: string, msg: string) => `${color}${msg}${c.reset}`
+export const paint = (color: string, msg: string) => `${color}${msg}${c.reset}`
 
 export const log = {
   info(msg: string) {

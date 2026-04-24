@@ -125,8 +125,10 @@ export function launchApp(cliPath: string, platform: string, project: string, ar
   execInherited(cliPath, ['launch', platform, '--project', project, ...args])
 }
 
-export function listDevices(cliPath: string): string {
-  return exec(cliPath, ['devices', 'list']).trim()
+export function listDevices(cliPath: string, platform?: string): string {
+  const args = ['devices', 'list']
+  if (platform) args.push('--platform', platform)
+  return exec(cliPath, args).trim()
 }
 
 export function cloudFunctions(cliPath: string, args: string[]): string {
